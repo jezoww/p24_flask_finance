@@ -10,15 +10,17 @@
     <div style="text-align: center;">
 
         <h3>Delete account</h3>
+        <form method="post">
         <p>{{form.password.label}}: {{form.password()}}
             {% if form.password.errors %}
                 {% for error in form.password.errors %}
-                    <span>{{ error }}</span>
+                    <br><span>{{ error }}</span>
                 {% endfor %}
             {% endif %}
         </p>
         {{form.submit()}}
         {{form.hidden_tag()}}
+    </form>
     </div>
     <form action="/home_menu" style="text-align: center;">
         <button>Back</button>

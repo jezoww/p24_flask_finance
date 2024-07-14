@@ -1,9 +1,8 @@
-from flask import render_template, session, redirect, url_for,request, flash
+from flask import render_template, session, redirect, url_for, request, flash
 from app import app, bcrypt, db
 from app.forms import *
 from app.models import *
 from random import randint
-
 
 
 @app.route("/")
@@ -148,7 +147,10 @@ def transfer_money():
     if form.validate_on_submit():
         sender_wallet.balance -= form.amount.data
         receiver_wallet.balance += form.amount.data
-        history = History(sender=sender_wallet.id, receiver=receiver_wallet.id, amount=form.amount.data,
+        history = History(sender=sender_wallet.id,
+                          receiver=receiver_wallet.id,
+                          amount=form.amount.data,
+                          description=form.description.data,
                           time=datetime.now())
         db.session.add(history)
         db.session.commit()
@@ -162,6 +164,8 @@ def history():
     if not session.get("user_id"):
         return redirect(url_for("login"))
     form = HistoryForm()
+    sent = 0
+    received = 0
     wallet = E_wallets.query.filter_by(user_id=session.get("user_id")).first()
     transfers1 = History.query.filter_by(sender=wallet.id).all()
     transfers2 = History.query.filter_by(receiver=wallet.id).all()
@@ -170,16 +174,20 @@ def history():
         for transfer in transfers1:
             if form.to_date.data >= transfer.time.date() >= form.from_date.data and form.to_time.data >= transfer.time.time() >= form.from_time.data:
                 transfers.append(transfer)
+                sent += transfer.amount
         for transfer in transfers2:
             if form.to_date.data >= transfer.time.date() >= form.from_date.data and form.to_time.data >= transfer.time.time() >= form.from_time.data:
                 transfers.append(transfer)
-        return render_template("history.html", transfers=transfers, form=form)
+                received += transfer.amount
+        return render_template("history.html", transfers=transfers, form=form, sent=sent, received=received)
     for transfer in transfers1:
         transfers.append(transfer)
+        sent += transfer.amount
     for transfer in transfers2:
         transfers.append(transfer)
+        received += transfer.amount
 
-    return render_template("history.html", transfers=transfers, form=form)
+    return render_template("history.html", transfers=transfers, form=form, sent=sent, received=received)
 
 
 @app.route('/settings')
@@ -189,14 +197,15 @@ def settings():
     return render_template('settings.html')
 
 
-@app.route('/delete')
+@app.route('/delete', methods=['GET', 'POST'])
 def delete():
     if not session.get("user_id"):
         return redirect(url_for("login"))
     form = DeleteForm()
     if form.validate_on_submit():
-        E_wallets.query.filter_by(user_id=session.get("user_id")).delete()
         Users.query.filter_by(id=session.get("user_id")).delete()
+        db.session.commit()
+        E_wallets.query.filter_by(user_id=session.get("user_id")).delete()
         db.session.commit()
         flash("Account successfully deleted", "success")
         return redirect(url_for("home"))

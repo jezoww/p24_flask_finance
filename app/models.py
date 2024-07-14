@@ -1,7 +1,8 @@
 from datetime import datetime
 
-
 from app import db
+
+
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -17,7 +18,7 @@ class Users(db.Model):
 class E_wallets(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    balance = db.Column(db.Integer, default=0, nullable=False)
+    balance = db.Column(db.Float, default=0.0, nullable=False)
 
 
 class Used_wallets(db.Model):
@@ -30,4 +31,5 @@ class History(db.Model):
     sender = db.Column(db.Integer, db.ForeignKey('e_wallets.id'), nullable=False)
     receiver = db.Column(db.Integer, db.ForeignKey('e_wallets.id'), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(80), default='...', nullable=False)
     time = db.Column(db.DateTime, default=datetime.now(), nullable=False)

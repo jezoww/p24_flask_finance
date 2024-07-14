@@ -1,7 +1,7 @@
 from flask import session
 from flask_wtf import FlaskForm
 from wtforms.fields.datetime import DateField, DateTimeField, TimeField
-from wtforms.fields.numeric import IntegerField
+from wtforms.fields.numeric import IntegerField, FloatField
 from wtforms.fields.simple import StringField, EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Email
 
@@ -81,17 +81,18 @@ class ChangeInfo(FlaskForm):
 
 
 class AddBalance(FlaskForm):
-    balance = IntegerField("Balance", validators=[DataRequired()])
+    balance = FloatField("Balance", validators=[DataRequired()])
     submit = SubmitField("Add", validators=[DataRequired()])
 
     def validate_balance(self, balance):
-        if balance.data >= 1000000:
-            raise ValidationError("Too many numbers.")
+        if balance.data >= 1000000.0:
+            raise ValidationError("Too many numbers. Maximum: 1 000 000")
 
 
 class TransferMoney(FlaskForm):
-    amount = IntegerField("Amount", validators=[DataRequired()])
+    amount = FloatField("Amount", validators=[DataRequired()])
     receiver = IntegerField("Enter wallet id", validators=[DataRequired()])
+    description = StringField("Description(optional)", validators=[Length(max=80)])
     submit = SubmitField("Transfer", validators=[DataRequired()])
 
     def validate_amount(self, amount):
@@ -103,6 +104,10 @@ class TransferMoney(FlaskForm):
         wallet = E_wallets.query.filter_by(id=receiver.data).first()
         if not wallet:
             raise ValidationError("This wallet does not exist.")
+
+    def validate_description(self, description):
+        if description.data == "":
+            description.data = None
 
 
 class ChangePassword(FlaskForm):
@@ -138,15 +143,14 @@ class ForgotPassword(FlaskForm):
 
 class HistoryForm(FlaskForm):
     from_date = DateField("From date", validators=[DataRequired()])
-    from_time = TimeField("From time", validators=[DataRequired()])
+    from_time = TimeField("time", validators=[DataRequired()])
     to_date = DateField("To date", validators=[DataRequired()])
-    to_time = TimeField("To time", validators=[DataRequired()])
+    to_time = TimeField("time", validators=[DataRequired()])
     submit = SubmitField("Change date", validators=[DataRequired()])
 
     def validate_from_date(self, from_date):
         if from_date.data >= self.to_date.data:
             raise ValidationError("From date cannot be greater than to date.")
-
 
     def validate_from_time(self, from_time):
         if from_time.data >= self.to_time.data:
@@ -161,4 +165,7 @@ class DeleteForm(FlaskForm):
         user = Users.query.filter_by(id=session.get("user_id")).first()
         if not bcrypt.check_password_hash(user.password, password.data):
             raise ValidationError("Incorrect password.")
+        wallet = E_wallets.query.filter_by(user_id=user.id).first()
+        if wallet.balance > 0:
+            raise ValidationError("You have money in your balance, you can't delete your account!")
 

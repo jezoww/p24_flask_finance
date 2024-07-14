@@ -9,46 +9,28 @@
     <div style="text-align: center;">
         <h2>History</h2>
         <form method="post">
-        <p>{{form.from_date.label}}: {{form.from_date()}}
+        <p>{{form.from_date.label}}: {{form.from_date()}} {{form.from_time.label}}: {{form.from_time()}}</p>
             {% if form.from_date.errors %}
                 {% for error in form.from_date.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
-            {% endif %}
-        </p>
-
-        <p>{{form.from_time.label}}: {{form.from_time()}}
-            {% if form.from_time.errors %}
-                {% for error in form.from_time.errors %}
-                    <span>{{ error }}</span>
-                {% endfor %}
-            {% endif %}
-        </p>
-
-  
-        <p>{{form.to_date.label}}: {{form.to_date()}}
+            {% endif %}   
+        <p>{{form.to_date.label}}: {{form.to_date()}} {{form.to_time.label}}: {{form.to_time()}}</p>
             {% if form.to_date.errors %}
                 {% for error in form.to_date.errors %}
                     <span>{{ error }}</span>
                 {% endfor %}
             {% endif %}
-        </p>
-
-        <p>{{form.to_time.label}}: {{form.to_time()}}
-            {% if form.to_time.errors %}
-                {% for error in form.to_time.errors %}
-                    <span>{{ error }}</span>
-                {% endfor %}
-            {% endif %}
-        </p>
-
-  
-        {{form.submit()}}
+       {{form.submit()}}
         {{form.hidden_tag()}}
     </form>
+    <h3>Total:&nbsp;&nbsp;|&nbsp;&nbsp;sent:&nbsp;{{sent}}&nbsp;&nbsp;|&nbsp;&nbsp;received:&nbsp;{{received}}</h3>
         {% for transfer in transfers %}
-            <p>Sender: {{transfer.sender}} | Receiver: {{transfer.receiver}} | Amount: {{transfer.amount}} | Date: {{transfer.time}}</p>
+            <p>Sender: {{transfer.sender}} | Receiver: {{transfer.receiver}} | Amount: {{transfer.amount}}| Description: {{transfer.description}} | Date: {{transfer.time}}</p>
         {% endfor %}
     </div>
+    <form action="/home_menu" style="text-align: center;">
+        <button>Back</button>
+    </form>
 </body>
 </html>
