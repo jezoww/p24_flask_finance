@@ -77,8 +77,11 @@
         {% endfor %}
     {% endif %}
 
-    <input type="checkbox" id="terms" name="terms" value="Terms">
-    <label for="vehicle1">I agree with all <a href="/terms" target="_blank">terms</a></label><br>
+    {% if message %}
+        <p>{{message}}</p>
+    {% endif %}
+
+    <input type="checkbox" name="terms" value="agree">I agree with all <a href="/terms" target="_blank">terms</a><br>
     <p> {{form.submit()}}</p>
     {{form.hidden_tag()}}
 </form>

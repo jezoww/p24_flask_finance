@@ -27,7 +27,7 @@ class Used_wallets(db.Model):
 
 class History(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    sender = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    receiver = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    sender = db.Column(db.Integer, db.ForeignKey('e_wallets.id'), nullable=False)
+    receiver = db.Column(db.Integer, db.ForeignKey('e_wallets.id'), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
     time = db.Column(db.DateTime, default=datetime.now(), nullable=False)

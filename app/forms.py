@@ -1,6 +1,6 @@
 from flask import session
 from flask_wtf import FlaskForm
-from wtforms.fields.datetime import DateField
+from wtforms.fields.datetime import DateField, DateTimeField, TimeField
 from wtforms.fields.numeric import IntegerField
 from wtforms.fields.simple import StringField, EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Email
@@ -12,7 +12,7 @@ from app.models import *
 class RegistrationForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(min=2, max=20)])
     first_name = StringField("First Name", validators=[DataRequired(), Length(min=3, max=20)])
-    last_name = StringField("First Name", validators=[DataRequired(), Length(min=3, max=20)])
+    last_name = StringField("Last Name", validators=[DataRequired(), Length(min=3, max=20)])
     passport = StringField("Passport", validators=[DataRequired(), Length(min=7, max=12)])
     email = EmailField("Email", validators=[DataRequired()])
     phone = StringField("Phone", validators=[DataRequired(), Length(min=5, max=16)])
@@ -138,9 +138,27 @@ class ForgotPassword(FlaskForm):
 
 class HistoryForm(FlaskForm):
     from_date = DateField("From date", validators=[DataRequired()])
+    from_time = TimeField("From time", validators=[DataRequired()])
     to_date = DateField("To date", validators=[DataRequired()])
+    to_time = TimeField("To time", validators=[DataRequired()])
     submit = SubmitField("Change date", validators=[DataRequired()])
 
     def validate_from_date(self, from_date):
         if from_date.data >= self.to_date.data:
             raise ValidationError("From date cannot be greater than to date.")
+
+
+    def validate_from_time(self, from_time):
+        if from_time.data >= self.to_time.data:
+            raise ValidationError("From time cannot be greater than to time.")
+
+
+class DeleteForm(FlaskForm):
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Delete", validators=[DataRequired()])
+
+    def validate_password(self, password):
+        user = Users.query.filter_by(id=session.get("user_id")).first()
+        if not bcrypt.check_password_hash(user.password, password.data):
+            raise ValidationError("Incorrect password.")
+

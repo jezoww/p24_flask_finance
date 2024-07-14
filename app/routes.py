@@ -1,8 +1,9 @@
-from flask import render_template, session, redirect, url_for, flash
+from flask import render_template, session, redirect, url_for,request, flash
 from app import app, bcrypt, db
 from app.forms import *
 from app.models import *
 from random import randint
+
 
 
 @app.route("/")
@@ -38,38 +39,43 @@ def register():
     if session.get("users_id"):
         return redirect(url_for("home"))
     form = RegistrationForm()
+    checkbox = request.form.get("terms")
+    message = None
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-        hashed_secret_code = bcrypt.generate_password_hash(form.secret_code.data).decode("utf-8")
-        ids = Used_wallets.query.all()
-        list_ids = []
-        for i in range(len(ids)):
-            list_ids.append(ids[i].wallet_id)
-        wallet_id = 100000000
-        while wallet_id in list_ids:
-            wallet_id = randint(100000000, 999999999)
-        user = Users(username=form.username.data,
-                     first_name=form.first_name.data,
-                     last_name=form.last_name.data,
-                     passport=form.passport.data,
-                     password=hashed_password,
-                     email=form.email.data,
-                     phone=form.phone.data,
-                     secret_code=hashed_secret_code)
-        db.session.add(user)
-        db.session.commit()
-        wallet = E_wallets(id=wallet_id,
-                           user_id=user.id,
-                           balance=0)
-        used_wallet = Used_wallets(wallet_id=wallet_id)
-        db.session.add(wallet)
-        db.session.commit()
-        db.session.add(used_wallet)
-        db.session.commit()
-        flash("User  successfully registered", "success")
-        return redirect(url_for("login"))
+        if checkbox == 'agree':
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
+            hashed_secret_code = bcrypt.generate_password_hash(form.secret_code.data).decode("utf-8")
+            ids = Used_wallets.query.all()
+            list_ids = []
+            for i in range(len(ids)):
+                list_ids.append(ids[i].wallet_id)
+            wallet_id = 100000000
+            while wallet_id in list_ids:
+                wallet_id = randint(100000000, 999999999)
+            user = Users(username=form.username.data,
+                         first_name=form.first_name.data,
+                         last_name=form.last_name.data,
+                         passport=form.passport.data,
+                         password=hashed_password,
+                         email=form.email.data,
+                         phone=form.phone.data,
+                         secret_code=hashed_secret_code)
+            db.session.add(user)
+            db.session.commit()
+            wallet = E_wallets(id=wallet_id,
+                               user_id=user.id,
+                               balance=0)
+            used_wallet = Used_wallets(wallet_id=wallet_id)
+            db.session.add(wallet)
+            db.session.commit()
+            db.session.add(used_wallet)
+            db.session.commit()
+            flash("User  successfully registered", "success")
+            return redirect(url_for("login"))
+        else:
+            message = "You have to be agree with our terms"
 
-    return render_template("register.html", form=form)
+    return render_template("register.html", form=form, message=message)
 
 
 @app.route("/terms")
@@ -159,16 +165,15 @@ def history():
     wallet = E_wallets.query.filter_by(user_id=session.get("user_id")).first()
     transfers1 = History.query.filter_by(sender=wallet.id).all()
     transfers2 = History.query.filter_by(receiver=wallet.id).all()
+    transfers = []
     if form.validate_on_submit():
-        transfers = []
         for transfer in transfers1:
-            if form.to_date.data >= transfer.time.date() >= form.from_date.data:
+            if form.to_date.data >= transfer.time.date() >= form.from_date.data and form.to_time.data >= transfer.time.time() >= form.from_time.data:
                 transfers.append(transfer)
         for transfer in transfers2:
-            if form.to_date.data >= transfer.time.date() >= form.from_date.data:
+            if form.to_date.data >= transfer.time.date() >= form.from_date.data and form.to_time.data >= transfer.time.time() >= form.from_time.data:
                 transfers.append(transfer)
         return render_template("history.html", transfers=transfers, form=form)
-    transfers = []
     for transfer in transfers1:
         transfers.append(transfer)
     for transfer in transfers2:
@@ -188,11 +193,14 @@ def settings():
 def delete():
     if not session.get("user_id"):
         return redirect(url_for("login"))
-    E_wallets.query.filter_by(user_id=session.get("user_id")).delete()
-    Users.query.filter_by(id=session.get("user_id")).delete()
-    db.session.commit()
-    flash("Account successfully deleted", "success")
-    return redirect(url_for("home"))
+    form = DeleteForm()
+    if form.validate_on_submit():
+        E_wallets.query.filter_by(user_id=session.get("user_id")).delete()
+        Users.query.filter_by(id=session.get("user_id")).delete()
+        db.session.commit()
+        flash("Account successfully deleted", "success")
+        return redirect(url_for("home"))
+    return render_template("delete.html", form=form)
 
 
 @app.route('/change_password', methods=['POST', 'GET'])
