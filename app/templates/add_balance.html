@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add balance</title>
+</head>
+<body>
+    <div style="text-align: center;">
+        <form method="post">
+            <p>{{form.balance.label}}: {{form.balance()}}</p>
+        {% if form.balance.errors %}
+            {% for error in form.balance.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        {% endif %}
+        {{ form.submit()}}
+        {{ form.hidden_tag() }}
+        </form>
+        <form action="/home_menu">
+            <button>Back</button>
+        </form>
+    </div>
+</body>
+</html>

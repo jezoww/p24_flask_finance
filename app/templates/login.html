@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{category}}" role="alert" style="text-align: center;">
+                       New Message:  {{ message }}
+                    </div>
+
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h1 style="text-align: center;">Login page</h1>
+        <form action="/register" style="text-align: right;">
+            <button>Register</button>
+        </form>
+    <form method="post" style="text-align: center;">
+        <p>{{form.username.label}}: {{form.username()}}</p>
+        {% if form.username.errors %}
+            {% for error in form.username.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        {% endif %}
+        <p>{{form.password.label}}: {{form.password()}}</p>
+        {% if form.password.errors %}
+            {% for error in form.password.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        {% endif %}
+            <a href="/forgot_password">Forgot password</a><br>
+        {{ form.submit()}}
+        {{ form.hidden_tag() }}
+
+    </form>
+    <form action="/" style="text-align: center;">
+        <button>Back</button>
+    </form>
+</body>
+</html>

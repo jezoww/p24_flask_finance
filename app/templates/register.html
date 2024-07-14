@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <h1 style="text-align: center;">Register page
+    <form action="/login" style="text-align: right;">
+        <button>Login</button>
+    </form>
+</h1>
+<form method="post" style="text-align: center;">
+
+    <p>{{form.username.label}}: {{form.username()}}</p>
+    {% if form.username.errors %}
+        {% for error in form.username.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+    <p>{{form.first_name.label}}: {{form.first_name()}}</p>
+    {% if form.first_name.errors %}
+        {% for error in form.first_name.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+    <p>{{form.last_name.label}}: {{form.last_name()}}</p>
+    {% if form.last_name.errors %}
+        {% for error in form.last_name.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}   
+    {% endif %}
+
+    <p>{{form.passport.label}}: {{form.passport()}}</p>
+    {% if form.username.errors %}
+        {% for error in form.username.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+    <p>{{form.email.label}}: {{form.email()}}</p>
+    {% if form.email.errors %}
+        {% for error in form.email.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+    <p>{{form.phone.label}}: {{form.phone()}}</p>
+    {% if form.phone.errors %}
+        {% for error in form.phone.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+    <p>{{form.password.label}}: {{form.password()}}</p>
+    {% if form.password.errors %}
+        {% for error in form.password.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+    <p>{{form.confirm_password.label}}: {{form.confirm_password()}}</p>
+    {% if form.confirm_password.errors %}
+        {% for error in form.confirm_password.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+
+    <p>{{form.secret_code.label}}: {{form.secret_code()}}</p>
+    {% if form.secret_code.errors %}
+        {% for error in form.secret_code.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+    <input type="checkbox" id="terms" name="terms" value="Terms">
+    <label for="vehicle1">I agree with all <a href="/terms" target="_blank">terms</a></label><br>
+    <p> {{form.submit()}}</p>
+    {{form.hidden_tag()}}
+</form>
+<form action="/" style="text-align: center;">
+    <button>Back</button>
+</form>
+</body>
+</html>

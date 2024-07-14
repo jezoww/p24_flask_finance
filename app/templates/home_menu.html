@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home menu</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{category}}" role="alert" style="text-align: center;">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    <div class="menu" style="text-align: center;">
+        <h3>Menu</h3>
+        <a href="/show_balance">Show balance</a><br>
+        <a href="/add_balance">Add balance</a><br>
+        <a href="/transfer_money">Transfer money</a><br>
+        <a href="/history">Transfer history</a><br>
+        <a href="/settings">Settings</a><br>
+        <a href="/info">Info</a>
+    </div>
+</body>
+</html>

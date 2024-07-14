@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{category}}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+    <form method="post" style="text-align: center;">
+        <h2>Transfer page</h2>
+        <p>{{form.amount.label}}: {{form.amount()}}</p>
+        {% if form.amount.errors %}
+            {% for error in form.receiver.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        {% endif %}
+        <p>{{form.receiver.label}}: {{form.receiver()}}</p>
+        {% if form.receiver.errors %}
+            {% for error in form.receiver.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        {% endif %}
+        {{ form.submit() }}
+        {{ form.hidden_tag() }}
+    </form>
+
+</body>
+</html>

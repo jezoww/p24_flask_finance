@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+</head>
+<body>
+    <div style="text-align: center;">
+        <h2>History</h2>
+        <form method="post">
+        <p>{{form.from_date.label}}: {{form.from_date()}}
+            {% if form.from_date.errors %}
+                {% for error in form.from_date.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            {% endif %}
+        </p>
+
+        <p>{{form.to_date.label}}: {{form.to_date()}}
+            {% if form.to_date.errors %}
+                {% for error in form.to_date.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            {% endif %}
+        </p>
+        {{form.submit()}}
+        {{form.hidden_tag()}}
+    </form>
+        {% for transfer in transfers %}
+            <p>Sender: {{transfer.sender}} | Receiver: {{transfer.receiver}} | Amount: {{transfer.amount}} | Date: {{transfer.time}}</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
